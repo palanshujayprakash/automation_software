@@ -38,9 +38,17 @@ export default async function WorkflowDetailPage({
           <Button variant="outline" size="sm">
             <Edit className="h-3.5 w-3.5 mr-1.5" /> Edit
           </Button>
-          <Button size="sm">
-            <Play className="h-3.5 w-3.5 mr-1.5" /> Run Now
-          </Button>
+          <form
+            action={async () => {
+              "use server";
+              const { triggerWorkflowRunAction } = await import("@/app/runs/actions");
+              await triggerWorkflowRunAction(id);
+            }}
+          >
+            <Button size="sm" type="submit">
+              <Play className="h-3.5 w-3.5 mr-1.5" /> Run Now
+            </Button>
+          </form>
         </div>
       </div>
 
