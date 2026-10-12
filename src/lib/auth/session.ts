@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -11,9 +12,9 @@ export interface AuthenticatedUser {
 
 /**
  * Derives user identity strictly from the verified session, never from client requests.
- * Prevents Insecure Direct Object References (IDOR).
+ * Uses React cache() for request-deduplication to prevent multiple database/auth lookups per render cycle.
  */
-export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
+export const getCurrentUser = cache(async (): Promise<AuthenticatedUser | null> => {
   const cookieStore = await cookies();
   const demoCookie = cookieStore.get("flowpilot_demo_session");
 
@@ -53,7 +54,7 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
   }
 
   return null;
-}
+});
 
 /**
  * Asserts user identity on server components or route handlers.

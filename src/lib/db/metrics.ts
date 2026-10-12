@@ -126,12 +126,28 @@ export async function getDashboardData(
   try {
     const supabase = await createServerSupabaseClient();
 
-    // 1. Fetch Workflows
-    const { data: workflowsData } = await supabase
-      .from("workflows")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+    // Parallelized Database Queries with Promise.all() to minimize response time
+    const [workflowsRes, runsRes, integrationsRes] = await Promise.all([
+      supabase
+        .from("workflows")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("execution_runs")
+        .select("*")
+        .eq("user_id", userId)
+        .order("started_at", { ascending: false })
+        .limit(10),
+      supabase
+        .from("integrations")
+        .select("service, status")
+        .eq("user_id", userId),
+    ]);
+
+    const workflowsData = workflowsRes.data;
+    const runsData = runsRes.data;
+    const integrationsData = integrationsRes.data;
 
     const workflows: Workflow[] = (workflowsData || []).map((w) => ({
       id: w.id,
@@ -149,14 +165,6 @@ export async function getDashboardData(
       nextScheduledRunAt: w.next_scheduled_run_at,
     }));
 
-    // 2. Fetch Execution Runs
-    const { data: runsData } = await supabase
-      .from("execution_runs")
-      .select("*")
-      .eq("user_id", userId)
-      .order("started_at", { ascending: false })
-      .limit(10);
-
     const runs: ExecutionRun[] = (runsData || []).map((r) => ({
       id: r.id,
       workflowId: r.workflow_id,
@@ -171,12 +179,6 @@ export async function getDashboardData(
       sanitizedError: r.sanitized_error,
       retryCount: r.retry_count || 0,
     }));
-
-    // 3. Fetch Integrations
-    const { data: integrationsData } = await supabase
-      .from("integrations")
-      .select("service, status")
-      .eq("user_id", userId);
 
     const connectedMap = new Map<string, "connected" | "disconnected" | "error">();
     (integrationsData || []).forEach((item) => {
