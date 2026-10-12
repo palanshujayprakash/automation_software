@@ -97,8 +97,19 @@ export function Topbar() {
             </div>
             <div className="hidden md:block text-left text-xs">
               <div className="font-semibold text-slate-900">Operator</div>
-              <div className="text-[11px] text-slate-500">Student Account</div>
+              <div className="text-[11px] text-slate-500">Active Session</div>
             </div>
+            <form action="/api/auth/signout" method="POST">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-xs text-slate-500 hover:text-red-600 ml-1"
+                title="Sign out"
+                type="submit"
+              >
+                Sign out
+              </Button>
+            </form>
           </div>
         </div>
       </header>
