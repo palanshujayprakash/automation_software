@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+
+  --surface: #ffffff;
+  --surface-muted: #f1f5f9;
+  --surface-subtle: #f8fafc;
+  --surface-border: #e2e8f0;
+
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-foreground: #ffffff;
+
+  --radius: 0.5rem;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Accessible focus ring */
+*:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
