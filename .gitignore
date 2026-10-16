@@ -29,3 +29,11 @@
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Python / Streamlit / SQLite
+__pycache__/
+*.py[cod]
+*$py.class
+*.db
+*.sqlite3
+.pytest_cache/
